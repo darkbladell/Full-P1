@@ -114,37 +114,44 @@ makeBtn("❌ Desativar Shaders", 7, function()
     notify("Shaders OFF")
 end)
 
-local gravLabel = Instance.new("TextLabel")
-gravLabel.Size = UDim2.new(0.48, -3, 0, 20)
-gravLabel.BackgroundTransparency = 1
-gravLabel.Text = "Gravidade: 196"
-gravLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-gravLabel.Font = Enum.Font.GothamBold
-gravLabel.TextSize = 11
-gravLabel.LayoutOrder = 8
-gravLabel.ZIndex = 6
-gravLabel.Parent = FP1.main:FindFirstChild("ScrollingFrame")
+-- Correção: Procurar a ScrollingFrame de forma segura
+local container = nil
+for _, child in ipairs(FP1.main:GetChildren()) do
+    if child:IsA("ScrollingFrame") then
+        container = child
+        break
+    end
+end
+
+if container then
+    local gravLabel = Instance.new("TextLabel")
+    gravLabel.Size = UDim2.new(0.48, -3, 0, 20)
+    gravLabel.BackgroundTransparency = 1
+    gravLabel.Text = "Gravidade: 196"
+    gravLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+    gravLabel.Font = Enum.Font.GothamBold
+    gravLabel.TextSize = 11
+    gravLabel.LayoutOrder = 8
+    gravLabel.ZIndex = 6
+    gravLabel.Parent = container
+end
 
 makeBtn("🌍 Gravidade Normal", 9, function()
     setGravity(196)
-    gravLabel.Text = "Gravidade: 196"
     notify("Gravidade: Normal")
 end)
 makeBtn("🌙 Gravidade Baixa", 10, function()
     setGravity(50)
-    gravLabel.Text = "Gravidade: 50"
     notify("Gravidade: Baixa")
 end)
 makeBtn("🌑 Gravidade Lunar", 11, function()
     setGravity(20)
-    gravLabel.Text = "Gravidade: 20"
     notify("Gravidade: Lunar")
 end)
 
 makeBtn("🔄 Resetar Tudo", 12, function()
     setSkybox("Normal")
     setGravity(196)
-    gravLabel.Text = "Gravidade: 196"
     CFG.Saturation = 0
     CFG.Bloom = 0
     updateShaders()
