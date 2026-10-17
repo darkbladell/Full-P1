@@ -1,12 +1,10 @@
 -- ============================================
--- FULL-P1 - LOADER (Drive World)
+-- FULL-P1 - LOADER
 -- ============================================
-
 local BASE = "https://raw.githubusercontent.com/darkbladell/Full-P1/main/"
 
 local function loadScript(nome, cache)
     local url = BASE .. nome .. "?v=" .. cache
-    print("[FULL-P1] Baixando: " .. nome)
     local ok, resultado = pcall(function() return game:HttpGet(url, true) end)
     if ok and resultado and #resultado > 100 then
         local success, err = pcall(function() loadstring(resultado)() end)
@@ -16,6 +14,6 @@ local function loadScript(nome, cache)
     end
 end
 
-loadScript("Drive-P1.lua", "101")
-task.wait(0.5) -- Pausa para a Parte 1 criar a tela
-loadScript("Drive-P2.lua", "101")
+loadScript("Drive-P1.lua", "202")
+task.wait(0.5) -- Espera a interface carregar
+loadScript("Drive-P2.lua", "202")
