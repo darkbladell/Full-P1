@@ -1,10 +1,10 @@
 -- ============================================
--- FULL P1 - LOADER
+-- FULL-P1 - LOADER (Drive World)
 -- ============================================
 
 local URL = "https://raw.githubusercontent.com/darkbladell/the-parralax/main/Full-P1.lua"
 
-print("[FP1] Carregando script...")
+print("[FULL-P1] Carregando script...")
 
 local sucesso, resultado = pcall(function()
     return game:HttpGet(URL, true)
@@ -15,10 +15,10 @@ if sucesso and resultado and #resultado > 100 then
         loadstring(resultado)()
     end)
     if ok then
-        print("[FP1] ✅ Full P1 carregado")
+        print("[FULL-P1] ✅ Script carregado com sucesso")
     else
-        warn("[FP1] ❌ Erro ao executar: " .. tostring(err))
+        warn("[FULL-P1] ❌ Erro ao executar: " .. tostring(err))
     end
 else
-    warn("[FP1] ❌ Falha ao baixar o script")
+    warn("[FULL-P1] ❌ Falha ao baixar o script. Verifique se o repositório está público.")
 end
