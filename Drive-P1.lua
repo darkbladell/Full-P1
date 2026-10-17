@@ -1,15 +1,12 @@
 -- ============================================
--- FULL-P1 | DRIVE WORLD - PARTE 1
--- Loading + UI + Funções
+-- FULL-P1 | DRIVE WORLD - PARTE 1 (Corrigida)
 -- ============================================
 
 if _G.FP1_LOADED then return end
 _G.FP1_LOADED = true
 
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
 local Lighting = game:GetService("Lighting")
-local Workspace = game:GetService("Workspace")
 local TweenService = game:GetService("TweenService")
 local LP = Players.LocalPlayer
 
@@ -99,7 +96,7 @@ task.spawn(function()
 end)
 
 -- ============================================
--- UI PRINCIPAL (HORIZONTAL + FUNDO)
+-- UI PRINCIPAL
 -- ============================================
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "FP1_UI"
@@ -143,13 +140,14 @@ ms.Color = Color3.fromRGB(255, 80, 80)
 ms.Thickness = 2
 ms.Parent = main
 
+-- 🔑 IMAGEM DE FUNDO: Forçada pro fundo e bem transparente
 local bgImage = Instance.new("ImageLabel")
 bgImage.Size = UDim2.new(1, 0, 1, 0)
 bgImage.BackgroundTransparency = 1
 bgImage.Image = "rbxassetid://106757687330670"
-bgImage.ImageTransparency = 0.7
+bgImage.ImageTransparency = 0.85 -- Deixa a imagem quase invisível pra não cobrir os botões
 bgImage.ScaleType = Enum.ScaleType.Stretch
-bgImage.ZIndex = 1
+bgImage.ZIndex = 0 -- Fica lá atrás de tudo
 bgImage.Parent = main
 
 local header = Instance.new("Frame")
@@ -157,7 +155,7 @@ header.Size = UDim2.new(1, 0, 0, 36)
 header.BackgroundColor3 = Color3.fromRGB(180, 30, 30)
 header.BackgroundTransparency = 0.1
 header.BorderSizePixel = 0
-header.ZIndex = 2
+header.ZIndex = 10
 header.Parent = main
 
 local hc = Instance.new("UICorner")
@@ -173,7 +171,7 @@ title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 14
 title.TextXAlignment = Enum.TextXAlignment.Left
-title.ZIndex = 3
+title.ZIndex = 11
 title.Parent = header
 
 local closeBtn = Instance.new("TextButton")
@@ -186,13 +184,14 @@ closeBtn.Font = Enum.Font.GothamBold
 closeBtn.TextSize = 14
 closeBtn.BorderSizePixel = 0
 closeBtn.AutoButtonColor = false
-closeBtn.ZIndex = 3
+closeBtn.ZIndex = 11
 closeBtn.Parent = header
 
 local cbc = Instance.new("UICorner")
 cbc.CornerRadius = UDim.new(0, 6)
 cbc.Parent = closeBtn
 
+-- 🔑 CONTAINER DOS BOTÕES: Forçado pra frente
 local container = Instance.new("ScrollingFrame")
 container.Size = UDim2.new(1, -16, 1, -48)
 container.Position = UDim2.new(0, 8, 0, 42)
@@ -202,7 +201,7 @@ container.ScrollBarThickness = 2
 container.ScrollBarImageColor3 = Color3.fromRGB(255, 80, 80)
 container.CanvasSize = UDim2.new(0, 0, 0, 0)
 container.AutomaticCanvasSize = Enum.AutomaticSize.Y
-container.ZIndex = 5
+container.ZIndex = 20 -- Fica na frente da imagem de fundo
 container.Parent = main
 
 local gridLayout = Instance.new("UIGridLayout")
@@ -221,6 +220,7 @@ local function notify(text)
     notif.Font = Enum.Font.GothamBold
     notif.TextSize = 12
     notif.BorderSizePixel = 0
+    notif.ZIndex = 200
     notif.Parent = ScreenGui
     local nc = Instance.new("UICorner")
     nc.CornerRadius = UDim.new(0, 6)
@@ -244,7 +244,7 @@ local function makeBtn(text, order, callback)
     btn.BorderSizePixel = 0
     btn.LayoutOrder = order
     btn.AutoButtonColor = false
-    btn.ZIndex = 6
+    btn.ZIndex = 21 -- Botão na frente
     btn.Parent = container
     local c = Instance.new("UICorner")
     c.CornerRadius = UDim.new(0, 6)
@@ -268,7 +268,6 @@ closeBtn.MouseButton1Click:Connect(function()
     main.Visible = false
 end)
 
--- Guarda as funções no _G pra Parte 2 usar
 FP1.CFG = CFG
 FP1.makeBtn = makeBtn
 FP1.notify = notify
