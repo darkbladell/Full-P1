@@ -1,5 +1,6 @@
 -- ============================================
--- FULL-P1 | DRIVE WORLD
+-- FULL-P1 | DRIVE WORLD - PARTE 1
+-- Loading + UI + Funções
 -- ============================================
 
 if _G.FP1_LOADED then return end
@@ -81,7 +82,6 @@ lPct.Font = Enum.Font.GothamMedium
 lPct.TextSize = 12
 lPct.Parent = lBg
 
--- Animação de Loading
 task.spawn(function()
     for i = 1, 100 do
         lFill.Size = UDim2.new(i / 100, 0, 1, 0)
@@ -89,17 +89,11 @@ task.spawn(function()
         task.wait(0.015)
     end
     task.wait(0.3)
-    
     local fade = TweenService:Create(lBg, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { BackgroundTransparency = 1 })
     local fadeTitle = TweenService:Create(lTitle, TweenInfo.new(0.4), {TextTransparency = 1})
     local fadeBar = TweenService:Create(lBarBg, TweenInfo.new(0.4), {BackgroundTransparency = 1})
     local fadePct = TweenService:Create(lPct, TweenInfo.new(0.4), {TextTransparency = 1})
-    
-    fade:Play()
-    fadeTitle:Play()
-    fadeBar:Play()
-    fadePct:Play()
-    
+    fade:Play(); fadeTitle:Play(); fadeBar:Play(); fadePct:Play()
     task.wait(0.5)
     loadingGui:Destroy()
 end)
@@ -128,7 +122,6 @@ local tbc = Instance.new("UICorner")
 tbc.CornerRadius = UDim.new(1, 0)
 tbc.Parent = toggleBtn
 
--- Painel Esticado Horizontal
 local main = Instance.new("Frame")
 main.Size = UDim2.new(0, 500, 0, 250)
 main.Position = UDim2.new(0.5, -250, 0.5, -125)
@@ -150,17 +143,15 @@ ms.Color = Color3.fromRGB(255, 80, 80)
 ms.Thickness = 2
 ms.Parent = main
 
--- FUNDO PNG (Atrás dos botões)
 local bgImage = Instance.new("ImageLabel")
 bgImage.Size = UDim2.new(1, 0, 1, 0)
 bgImage.BackgroundTransparency = 1
 bgImage.Image = "rbxassetid://106757687330670"
-bgImage.ImageTransparency = 0.75
+bgImage.ImageTransparency = 0.7
 bgImage.ScaleType = Enum.ScaleType.Stretch
 bgImage.ZIndex = 1
 bgImage.Parent = main
 
--- Header
 local header = Instance.new("Frame")
 header.Size = UDim2.new(1, 0, 0, 36)
 header.BackgroundColor3 = Color3.fromRGB(180, 30, 30)
@@ -202,7 +193,6 @@ local cbc = Instance.new("UICorner")
 cbc.CornerRadius = UDim.new(0, 6)
 cbc.Parent = closeBtn
 
--- Container dos Botões
 local container = Instance.new("ScrollingFrame")
 container.Size = UDim2.new(1, -16, 1, -48)
 container.Position = UDim2.new(0, 8, 0, 42)
@@ -221,7 +211,6 @@ gridLayout.CellPadding = UDim2.new(0.04, 0, 0, 6)
 gridLayout.SortOrder = Enum.SortOrder.LayoutOrder
 gridLayout.Parent = container
 
--- Notificações
 local function notify(text)
     local notif = Instance.new("TextLabel")
     notif.Size = UDim2.new(0, 200, 0, 34)
@@ -269,7 +258,6 @@ local function makeBtn(text, order, callback)
     return btn
 end
 
--- Abrir/Fechar
 local menuOpen = false
 toggleBtn.MouseButton1Click:Connect(function()
     menuOpen = not menuOpen
@@ -280,145 +268,10 @@ closeBtn.MouseButton1Click:Connect(function()
     main.Visible = false
 end)
 
--- ============================================
--- FUNÇÕES
--- ============================================
-local function savePosition()
-    local char = LP.Character
-    if not char then return end
-    local seat = char:FindFirstChildOfClass("Humanoid") and char.Humanoid.SeatPart
-    local target = seat and seat.Parent and seat.Parent.PrimaryPart or char:FindFirstChild("HumanoidRootPart")
-    if target then
-        CFG.SavedCFrame = target.CFrame
-        notify("Posição salva!")
-    else
-        notify("Não achei o carro/player")
-    end
-end
+-- Guarda as funções no _G pra Parte 2 usar
+FP1.CFG = CFG
+FP1.makeBtn = makeBtn
+FP1.notify = notify
+FP1.main = main
 
-local function teleportToSaved()
-    if not CFG.SavedCFrame then
-        notify("Salve uma posição primeiro!")
-        return
-    end
-    local char = LP.Character
-    if not char then return end
-    local seat = char:FindFirstChildOfClass("Humanoid") and char.Humanoid.SeatPart
-    local target = seat and seat.Parent and seat.Parent.PrimaryPart or char:FindFirstChild("HumanoidRootPart")
-    if target then
-        target.CFrame = CFG.SavedCFrame + Vector3.new(0, 5, 0)
-        notify("Teleportado!")
-    else
-        notify("Não achei o carro/player")
-    end
-end
-
-local SKYBOXES = {
-    Normal = nil,
-    Night = { Bk = "rbxassetid://1233158420", Dn = "rbxassetid://1233158838", Ft = "rbxassetid://1233157105", Lf = "rbxassetid://1233157640", Rt = "rbxassetid://1233157995", Up = "rbxassetid://1233159158" },
-    Purple = { Bk = "rbxassetid://6021017254", Dn = "rbxassetid://6021016390", Ft = "rbxassetid://6021015479", Lf = "rbxassetid://6021014807", Rt = "rbxassetid://6021012347", Up = "rbxassetid://6021011228" },
-}
-
-local function setSkybox(name)
-    CFG.Skybox = name
-    for _, v in ipairs(Lighting:GetChildren()) do
-        if v:IsA("Sky") then v:Destroy() end
-    end
-    if name == "Normal" or not SKYBOXES[name] then return end
-    local data = SKYBOXES[name]
-    local sky = Instance.new("Sky")
-    sky.SkyboxBk, sky.SkyboxDn, sky.SkyboxFt = data.Bk, data.Dn, data.Ft
-    sky.SkyboxLf, sky.SkyboxRt, sky.SkyboxUp = data.Lf, data.Rt, data.Up
-    sky.Parent = Lighting
-end
-
-local function setGravity(value)
-    Workspace.Gravity = value
-    CFG.Gravity = value
-end
-
-local ccEffect = nil
-local bloomEffect = nil
-
-local function updateShaders()
-    if not ccEffect then
-        ccEffect = Instance.new("ColorCorrectionEffect")
-        ccEffect.Parent = Lighting
-    end
-    if not bloomEffect then
-        bloomEffect = Instance.new("BloomEffect")
-        bloomEffect.Threshold = 0.8
-        bloomEffect.Intensity = 0.5
-        bloomEffect.Size = 24
-        bloomEffect.Parent = Lighting
-    end
-    ccEffect.Saturation = CFG.Saturation
-    bloomEffect.Intensity = CFG.Bloom
-end
-
--- ============================================
--- BOTÕES DO MENU
--- ============================================
-makeBtn("📍 Salvar Posição", 1, savePosition)
-makeBtn("🚀 Teleportar", 2, teleportToSaved)
-
-makeBtn("🌌 Skybox: Normal", 3, function() setSkybox("Normal"); notify("Sky: Normal") end)
-makeBtn("🌌 Skybox: Night", 4, function() setSkybox("Night"); notify("Sky: Night") end)
-makeBtn("🌌 Skybox: Purple", 5, function() setSkybox("Purple"); notify("Sky: Purple") end)
-
-makeBtn("✨ Ativar Shaders", 6, function()
-    CFG.Saturation = 0.4
-    CFG.Bloom = 1
-    updateShaders()
-    notify("Shaders ON")
-end)
-makeBtn("❌ Desativar Shaders", 7, function()
-    CFG.Saturation = 0
-    CFG.Bloom = 0
-    updateShaders()
-    notify("Shaders OFF")
-end)
-
-local gravLabel = Instance.new("TextLabel")
-gravLabel.Size = UDim2.new(0.48, -3, 0, 20)
-gravLabel.BackgroundTransparency = 1
-gravLabel.Text = "Gravidade: 196"
-gravLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-gravLabel.Font = Enum.Font.GothamBold
-gravLabel.TextSize = 11
-gravLabel.LayoutOrder = 8
-gravLabel.ZIndex = 6
-gravLabel.Parent = container
-
-makeBtn("🌍 Gravidade Normal", 9, function()
-    setGravity(196)
-    gravLabel.Text = "Gravidade: 196"
-    notify("Gravidade: Normal")
-end)
-makeBtn("🌙 Gravidade Baixa", 10, function()
-    setGravity(50)
-    gravLabel.Text = "Gravidade: 50"
-    notify("Gravidade: Baixa")
-end)
-makeBtn("🌑 Gravidade Lunar", 11, function()
-    setGravity(20)
-    gravLabel.Text = "Gravidade: 20"
-    notify("Gravidade: Lunar")
-end)
-
-makeBtn("🔄 Resetar Tudo", 12, function()
-    setSkybox("Normal")
-    setGravity(196)
-    gravLabel.Text = "Gravidade: 196"
-    CFG.Saturation = 0
-    CFG.Bloom = 0
-    updateShaders()
-    notify("Tudo resetado")
-end)
-
-makeBtn("❌ Fechar Menu", 13, function()
-    main.Visible = false
-end)
-
-notify("Full-P1 | Drive World carregado!")
-print("✅ FULL-P1 | DRIVE WORLD carregado com sucesso")
+print("✅ FULL-P1 | Parte 1 carregada")
